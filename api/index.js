@@ -1,13 +1,12 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 
 export default async function handler(req, res) {
     if (req.method !== "POST") {
         return res.status(405).json({ message: "Only POST requests allowed" });
     }
 
-    const { name, email, subject, description } = req.body;
+    const { name, email, message } = req.body;
 
-    // Nodemailer setup using Mailjet SMTP
     const transporter = nodemailer.createTransport({
         host: "in-v3.mailjet.com",
         port: 587,
@@ -23,14 +22,13 @@ export default async function handler(req, res) {
             from: `"Healthflow" <ansqazzafi@gmail.com>`,
             to: "recipient@example.com", // Change this to your recipient email
             subject: "New Contact Form Submission",
-            text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\ndescription: ${description}`,
+            text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
             html: `<p><strong>Name:</strong> ${name}</p>
                    <p><strong>Email:</strong> ${email}</p>
-                   <p><strong>Subject:</strong> ${subject}</p>,
-                   <p><strong>Subject:</strong> ${description}</p>`,
+                   <p><strong>Message:</strong> ${message}</p>`,
         });
 
-        res.json({ message: "Email sent successfully!" });
+        res.status(200).json({ message: "Email sent successfully!" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Failed to send email." });
